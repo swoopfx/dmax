@@ -30,7 +30,7 @@ class BookRepository extends EntityRepository
     {
         $em = $this->getEntityManager();
         $repo = $em->createQueryBuilder("b")
-            ->select(["partial b.{id,name, isbn, publisher}", "partial a.{id,authorName}"])
+            ->select(["partial b.{id,name, isbn, number_of_pages, publisher, release_date, country}", "partial a.{id,authorName}"])
             ->from(Books::class, "b")
         // ->leftJoin("b.country", "c")
             ->join("b.author", "a")
