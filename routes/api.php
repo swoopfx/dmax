@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\BooksController;
+use App\Http\Controllers\BooksController as Books;
 use App\Http\Controllers\IceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,13 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::resource('books', 'BooksController');
+//Route::resource('books', 'BooksController');
 
 Route::get("external-books", [IceController::class, "externalbookByName"]);
-
-// Route::prefix('v1/books')->group(function () {
-//     Route::get('/', [ProjectController::class, 'apiWithoutKey']);
-//     Route::post('apiwithkey', [ProjectController::class, 'apiWithKey']);
-//     Route::patch("/");
-//     // Route::delete()
-// });
+Route::post('v1/books', [Books::class, "store"]);
+Route::get('v1/books/{id}', [Books::class, "show"]);
+Route::get('v1/books', [Books::class, "index"]);
+Route::patch("v1/books/{id}", [Books::class, "update"]);
+Route::delete("v1/books/{id}", [Books::class, "destroy"]);

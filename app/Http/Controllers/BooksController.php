@@ -3,9 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\BooksService;
+
 
 class BooksController extends Controller
 {
+    private $booksService;
+
+    public function __construct(BooksService $service)
+    {
+        $this->booksService = $service;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +21,15 @@ class BooksController extends Controller
      */
     public function index()
     {
-        //
+        
+        $bookService = $this->booksService;
+        return response()->json(
+           [
+               "status_code"=>200,
+               "status"=>"success",
+               "data"=>$bookService->readBooks()
+           ], 200
+       );
     }
 
     /**
@@ -34,7 +50,28 @@ class BooksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+            $data = $request->validate([
+                "name"=>"required",
+                "isbn"=>"required",
+                "number_of_pages"=>"required|integer",
+                "country"=>"required",
+                "publisher"=>"required",
+                "authors"=>"required|string",
+                "release_date"=>"required|date_format:Y-m-d",
+            ]);
+            
+            $res = $this->booksService->createBook($data);
+            return response()->json(
+                [
+                    "status_code"=>201,
+                    "status"=>"success",
+                    "data"=>$res
+                ], 201
+            );
+        
+       
+
     }
 
     /**
@@ -43,9 +80,17 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $id = $request->route()->parameter('id');
+         $bookService = $this->booksService;
+         return response()->json(
+            [
+                "status_code"=>200,
+                "status"=>"success",
+                "data"=>$bookService->getBook($id)
+            ], 200
+        );
     }
 
     /**
@@ -54,9 +99,9 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+      
     }
 
     /**
@@ -68,7 +113,27 @@ class BooksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->validate([
+            "name"=>"required",
+            "isbn"=>"required",
+            "number_of_pages"=>"required|integer",
+            "country"=>"required",
+            "publisher"=>"required",
+            "authors"=>"required|string",
+            "release_date"=>"required|date_format:Y-m-d",
+        ]);
+
+        $id = $request->route()->parameter('id');
+        $res = $this->booksService->updateBook($data, $id);
+        
+        return response()->json(
+            [
+                "status_code"=>200,
+                "status"=>"success",
+                "message"=>"The book {$res[0]['name']} was updated successfully",
+                "data"=>$res
+            ], 200
+        );
     }
 
     /**
@@ -77,8 +142,18 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $id = $request->route()->parameter('id');
+        $bookName = $this->booksService->removeBook($id);
+        
+        return response()->json(
+            [
+                "status_code"=>204,
+                "status"=>"success",
+                "message"=>"The book {$bookName} was updated successfully",
+                "data"=>[]
+            ], 200
+        );
     }
 }

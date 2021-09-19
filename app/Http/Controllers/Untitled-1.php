@@ -1,1 +1,0 @@
-GET http://localhost:8000/api/external-books?name=A%20Game%20of%20Thrones HTTP/1.1

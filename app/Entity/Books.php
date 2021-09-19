@@ -1,12 +1,11 @@
 <?php
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Entity\Repository\BookRepository")
  * @ORM\Table(name="books")
  */
 class Books
@@ -35,15 +34,15 @@ class Books
     private $isbn;
 
     /**
-     * @ORM\OneToMany(targetEntity="Author", mappedBy="books")
+     * @ORM\OneToMany(targetEntity="Author", mappedBy="book", cascade={"remove"})
      *
      * @var
      *
      */
-    private $authors;
+    private $author;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Country")
+     * @ORM\Column(name="country", type="string", nullable=true)
      *
      * @var Country
      */
@@ -64,9 +63,9 @@ class Books
     private $publisher;
 
     /**
-     * @ORM\Column(name="release_date", type="date", nullable=true)
+     * @ORM\Column(name="release_date", type="string", nullable=true)
      *
-     * @var Datetime
+     * @var string
      */
     private $release_date;
 
@@ -86,7 +85,7 @@ class Books
 
     public function __contruct()
     {
-        $this->authors = new ArrayCollection();
+        $this->author = new ArrayCollection();
     }
 
     /**
@@ -120,9 +119,9 @@ class Books
      *
      * @return the $authors
      */
-    public function getAuthors()
+    public function getAuthor()
     {
-        return $this->authors;
+        return $this->author;
     }
 
     /**
@@ -181,7 +180,7 @@ class Books
 
     /**
      *
-     * @param number $id            
+     * @param number $id
      */
     public function setId($id)
     {
@@ -191,7 +190,7 @@ class Books
 
     /**
      *
-     * @param string $name            
+     * @param string $name
      */
     public function setName($name)
     {
@@ -201,7 +200,7 @@ class Books
 
     /**
      *
-     * @param string $isbn            
+     * @param string $isbn
      */
     public function setIsbn($isbn)
     {
@@ -217,27 +216,27 @@ class Books
     // $this->authors = $authors;
     // return $this;
     // }
-    public function addAuthors(Author $authors)
+    public function addAuthor(Author $authors)
     {
-        if (! $this->subscriber->contains($authors)) {
-            $this->authors[] = $authors;
+        if (!$this->author->contains($authors)) {
+            $this->author[] = $authors;
             $authors->setBook($this);
         }
         return $this;
     }
 
-    public function removeAuthors(Author $authors)
+    public function removeAuthor(Author $authors)
     {
-        if ($this->subscriber->contains($authors)) {
-            $this->authors->removeElement($authors);
-            $authors->setBook(NULL);
+        if ($this->author->contains($authors)) {
+            $this->author->removeElement($authors);
+            $authors->setBook(null);
         }
         return $this;
     }
 
     /**
      *
-     * @param \App\Entity\Country $country            
+     * @param \App\Entity\Country $country
      */
     public function setCountry($country)
     {
@@ -247,7 +246,7 @@ class Books
 
     /**
      *
-     * @param string $number_of_pages            
+     * @param string $number_of_pages
      */
     public function setNumber_of_pages($number_of_pages)
     {
@@ -257,7 +256,7 @@ class Books
 
     /**
      *
-     * @param string $publisher            
+     * @param string $publisher
      */
     public function setPublisher($publisher)
     {
@@ -267,7 +266,7 @@ class Books
 
     /**
      *
-     * @param \App\Entity\Datetime $release_date            
+     * @param \App\Entity\Datetime $release_date
      */
     public function setRelease_date($release_date)
     {
@@ -277,7 +276,7 @@ class Books
 
     /**
      *
-     * @param \App\Entity\Datetime $createdOn            
+     * @param \App\Entity\Datetime $createdOn
      */
     public function setCreatedOn($createdOn)
     {
@@ -288,7 +287,7 @@ class Books
 
     /**
      *
-     * @param \App\Entity\Datetime $updatedOn            
+     * @param \App\Entity\Datetime $updatedOn
      */
     public function setUpdatedOn($updatedOn)
     {

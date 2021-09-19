@@ -25,7 +25,7 @@ class Author {
     private $authorName;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Books", inversedBy="authors")
+     * @ORM\ManyToOne(targetEntity="Books", inversedBy="author")
      * @var Books
      */
     private $book;

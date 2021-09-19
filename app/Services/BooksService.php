@@ -3,10 +3,8 @@ namespace App\Services;
 
 use App\Entity\Author;
 use App\Entity\Books;
-use App\Entity\Country;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 class BooksService
 {
@@ -25,35 +23,88 @@ class BooksService
     {
         $bookEntity = $this->bookEntity;
         $em = $this->entityManager;
-        $author = $data->input("authors");
-        $realeaseDate = $data->input("release_date"); //fix this date format
-        
-        $bookEntity->setName($data->input('name'))
-            ->setIsbn($data->input("isbn"))
-            ->setCountry($em->find(Country::class, $data->input("country")))
+        $author = $data["authors"];
+        // $realeaseDate = $data["release_date"] ?? null;
+        // if ($realeaseDate !== null) {
+
+        //     $date = DateTime::createFromFormat('j/m/Y', $realeaseDate);
+        // }
+        // var_dump($date);
+        $bookEntity->setName($data['name'] ?? null)
+            ->setIsbn($data["isbn"] ?? null)
+            ->setCountry($data["country"] ?? null)
             ->setCreatedOn(new DateTime())
-            ->setNumber_of_pages($data->input("number_of_pages"))
-            ->setRelease_date($realeaseDate);
+            ->setNumber_of_pages($data["number_of_pages"] ?? null)
+            ->setPublisher($data["publisher"])
+            ->setRelease_date($data["release_date"] ?? null);
 
-            if(is_numeric($author)){
-                $bookEntity->addAuthors($em->find(Author::class, $author));
-            }else if(is_string($author)){
+        $authorEntity = new Author;
+        $authorEntity->setAuthorName($author)->setBook($bookEntity);
+        $em->persist($authorEntity);
 
-                $authorEntity = new Author;
-                $authorEntity->setAuthorName($author)->setBook($bookEntity);
-                $em->persist($authorEntity);
-            }else{
-                throw new Exception("Invalid Format");
-            }
+        $em->persist($bookEntity);
+        $em->flush();
+        // $book = $em->getRepository(Books::class)->getBookJson($bookEntity->getId());
+        // var_dump($book);
 
+        return $em->getRepository(Books::class)->getBookJson($bookEntity->getId());
 
-            $em->persist($bookEntity);
-            $em->flush();
     }
 
     public function getBook(int $id)
     {
-        // $this->entityManager
+        $em = $this->entityManager;
+        return $em->getRepository(Books::class)->getBookJson($id);
+    }
+
+    public function readBooks()
+    {
+        $em = $this->entityManager;
+        return $em->getRepository(Books::class)->getBooks();
+    }
+
+    public function updateBook($data, $id)
+    {
+        $em = $this->entityManager;
+        $bookEntity = $em->find(Books::class, $id);
+        $author = $data["authors"];
+        // $realeaseDate = $data["release_date"] ?? null;
+        // if ($realeaseDate !== null) {
+
+        //     $date = DateTime::createFromFormat('j/m/Y', $realeaseDate);
+        // }
+        // var_dump($date);
+        $bookEntity->setName($data['name'] ?? null)
+            ->setIsbn($data["isbn"] ?? null)
+            ->setCountry($data["country"] ?? null)
+            ->setUpdatedOn(new DateTime())
+            ->setNumber_of_pages($data["number_of_pages"] ?? null)
+            ->setPublisher($data["publisher"])
+            ->setRelease_date($data["release_date"] ?? null);
+
+        $authorEntit = $bookEntity->getAuthor();
+        foreach ($authorEntit as $aut) {
+            $aut->setBook(null);
+            $em->persist($aut);
+        }
+        $authorEntity = new Author;
+        $authorEntity->setAuthorName($author)->setBook($bookEntity);
+        $em->persist($authorEntity);
+
+        $em->persist($bookEntity);
+        $em->flush();
+
+        return $em->getRepository(Books::class)->getBookJson($bookEntity->getId());
+
+    }
+
+    public function removeBook($id){
+        $em= $this->entityManager;
+        $bookEntity = $em->find(Books::class, $id);
+        $bookName = $bookEntity->getName();
+        $em->remove($bookEntity);
+        $em->flush();
+        return $bookName;
     }
 
     public function setEntityManager($em)
@@ -73,7 +124,7 @@ class BooksService
         return $this;
     }
 
-    public function getBookEntoty()
+    public function getBookEntity()
     {
         return $this->bookEntity;
     }
