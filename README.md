@@ -3,59 +3,45 @@ DataMax Assessment
 
 Introduction
 ------------
-This is a simple, skeleton application using the ZF2 MVC layer and module
-systems. This application is meant to be used as a starting place for those
+This is a simple, Application built with the Laravel framework and based on the data mapper architecture of doctrine, This application is meant to be used as a starting place for those
 looking to get their feet wet with ZF2.
 
 Installation
 ------------
 
-Using Composer (recommended)
+Run Composer (recommended)
 ----------------------------
-The recommended way to get a working copy of this project is to clone the repository
-and use `composer` to install dependencies using the `create-project` command:
+To activate the library please run the composer update 
 
-    curl -s https://getcomposer.org/installer | php --
-    php composer.phar create-project -sdev --repository-url="https://packages.zendframework.com" zendframework/skeleton-application path/to/install
-
-Alternately, clone the repository and manually invoke `composer` using the shipped
-`composer.phar`:
 
     cd my/project/dir
-    git clone git://github.com/zendframework/ZendSkeletonApplication.git
-    cd ZendSkeletonApplication
     php composer.phar self-update
     php composer.phar install
 
-(The `self-update` directive is to ensure you have an up-to-date `composer.phar`
-available.)
 
-Another alternative for downloading the project is to grab it via `curl`, and
-then pass it to `tar`:
 
-    cd my/project/dir
-    curl -#L https://github.com/zendframework/ZendSkeletonApplication/tarball/master | tar xz --strip-components=1
-
-You would then invoke `composer` to install dependencies per the previous
-example.
-
-Using Git submodules
+Configure your database
 --------------------
-Alternatively, you can install using native git submodules:
+I assume the database used is mysql, go to the .env file and configure the respective mysql configuration parameters to meet 
 
-    git clone git://github.com/zendframework/ZendSkeletonApplication.git --recursive
+    
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=your port
+    DB_DATABASE=your database
+    DB_USERNAME= your username
+    DB_PASSWORD=you password
 
 Web Server Setup
 ----------------
 
-### PHP CLI Server
+### DOCTRINE CONFIGURATION 
 
-The simplest way to get started if you are using PHP 5.4 or above is to start the internal PHP cli-server in the root directory:
+Unlike to conventional active record of eloquent, this application uses a more DOmain Driven Achitecture premised on doctrine, it is assumed that composer has successfully run and database parameters and mysql setup has been successful. In other to create the tables in the databse please run 
 
-    php -S 0.0.0.0:8080 -t public/ public/index.php
+    php artisan doctrine:schema:create
 
-This will start the cli-server on port 8080, and bind it to all network
-interfaces.
+This will create tables in the provided database
 
 **Note: ** The built-in CLI server is *for development only*.
 
